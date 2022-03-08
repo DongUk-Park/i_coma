@@ -1,3 +1,3 @@
-# im-coma
+# coma
 i am coma
 

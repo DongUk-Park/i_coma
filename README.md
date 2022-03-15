@@ -1,7 +1,7 @@
 # i_coma
 
 ## i_coma
-*i_coma 줄바꿈하고싶은데* \
+*i_coma 줄바꿈은 역슬래시* \
 **i_coma 진한색깔**
 
 - 복무신조

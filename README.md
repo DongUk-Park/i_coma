@@ -1,6 +1,6 @@
 # i_coma
 
-##i_coma
+## i_coma
 *i_coma*
 **i_coma**
 
@@ -8,12 +8,12 @@
 -우리는..
 
 
-###Code
+### Code
 ```
 code block
 ```
 
-###Tables
+### Tables
 
 First Header | Second Header
 -------------|--------------

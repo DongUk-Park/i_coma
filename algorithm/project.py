@@ -19,8 +19,7 @@ def det_calc(df):
     else: 
         volume = np.linalg.det(volume)
         
-    if volume > 0:
-        volume = volume ** 0.5
+    volume = abs(volume) ** 0.5
     return volume
 
 def sortByDetSize(matrix):
@@ -38,36 +37,52 @@ def sortByDetSize(matrix):
         
         sortedList.append([det.item(), idx])
         idx += 1
-    sortedList.sort(reverse = True)
-    #print(sortedList[:5])
+        
+    sortedList.sort(reverse=True)
     return sortedList
-    
+
+def sortBySumSize(matrix):
+    matrix = np.array(matrix)
+    sortedList = []
+    idx = 0
+    for row in matrix:
+        sortedList.append([np.sum(row), idx])
+        idx += 1
+    sortedList.sort(reverse = True)
+    return sortedList
+
 if __name__ == "__main__":
     df = get_matrix('input.csv') # Matrix Read to list , 10000 * 20
     
     startTime = time.time()
-    sorted_list = sortByDetSize(df)
-    #sorted_list = sortBySumSize(df)
+    #sorted_list = sortByDetSize(df)
+    sorted_list = sortBySumSize(df)
     
-    
-    det_matrix = []
-    det_matrix.append(df[sorted_list[0][1]])
-    sorted_list.pop(0)
-    
-    for i in range(10000):
-        max = det_calc(det_matrix)
+    global_max = 0
+    global_time = 0
+    for startPoint in range(50):
+        used = [False] * 10000
+        det_matrix = []
+        det_matrix.append(df[sorted_list[startPoint][1]])
+        used[startPoint] = True
+        
+        max = 0
         max_idx = 0
-        for j in range(len(sorted_list)):
-            test_mat = det_matrix + [df[sorted_list[j][1]]]
-            v = det_calc(test_mat)
-            if v > max:
-                max_idx = j
-                max = v
-        det_matrix.append(df[sorted_list[max_idx][1]])
-        print(max, i, len(det_matrix))
-        if(len(det_matrix) > 21): break
-        sorted_list.pop(max_idx)
-    
-    
-    usingTime_sec = time.time() - startTime
-    print(f"소요시간 : {usingTime_sec}sec")
+        before_max = 0
+        for i in range(20):
+            for j in range(10000):
+                if used[j] is False:
+                    test_mat = det_matrix + [df[sorted_list[j][1]]]
+                    v = det_calc(test_mat)
+                    if v > max:
+                        max_idx = j
+                        max = v
+            det_matrix.append(df[sorted_list[max_idx][1]])
+            used[max_idx] = True
+        if max > global_max:
+            global_max = max
+        
+        usingTime_sec = time.time() - startTime
+        print(f"{startPoint} 소요시간 : {usingTime_sec}sec,{max}")
+        global_time += usingTime_sec
+    print(f"최종 결과 : {global_max}, 소요시간: {global_time}")

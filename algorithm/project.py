@@ -41,17 +41,6 @@ def sortByDetSize(matrix):
     sortedList.sort(reverse = True)
     #print(sortedList[:5])
     return sortedList
-
-def sortBySumSize(matrix):
-    matrix = np.array(matrix)
-    sortedList = []
-    idx = 0
-    for row in matrix:
-        sortedList.append([np.sum(row), idx])
-        idx += 1
-    sortedList.sort(reverse = True)
-    #print(sortedList[:5])
-    return sortedList
     
 if __name__ == "__main__":
     df = get_matrix('input.csv') # Matrix Read to list , 10000 * 20
@@ -60,27 +49,25 @@ if __name__ == "__main__":
     sorted_list = sortByDetSize(df)
     #sorted_list = sortBySumSize(df)
     
-    max = 0
-    max_idx = 0
-    max_startPoint = 0
     
-    for startPoint in range(10000):
-        for i in range(1,21): # det 연산 상위 100개에 대해서
-            det_result = []
-            for j in range(i): # 1개씩 column을 붙이면서 matrix det연산 결과 확인 
-                if j + startPoint < 10000:
-                    col = sorted_list[j+startPoint][1]
-                else:
-                    col = sorted_list[j + startPoint - 10000][1]
-                det_result.append(df[col])
-            volume = det_calc(det_result)
-            #print(startPoint, i, volume)
-            if volume > max:
-                max = volume
-                max_idx = i
-                max_startPoint = startPoint
-                #print(startPoint, i, max)
-            #print(f"volume : {volume}, len(det_matrix) :{i}")
+    det_matrix = []
+    det_matrix.append(df[sorted_list[0][1]])
+    sorted_list.pop(0)
+    
+    for i in range(10000):
+        max = det_calc(det_matrix)
+        max_idx = 0
+        for j in range(len(sorted_list)):
+            test_mat = det_matrix + [df[sorted_list[j][1]]]
+            v = det_calc(test_mat)
+            if v > max:
+                max_idx = j
+                max = v
+        det_matrix.append(df[sorted_list[max_idx][1]])
+        print(max, i, len(det_matrix))
+        if(len(det_matrix) > 21): break
+        sorted_list.pop(max_idx)
+    
+    
     usingTime_sec = time.time() - startTime
     print(f"소요시간 : {usingTime_sec}sec")
-    print(max_startPoint, max_idx, max)

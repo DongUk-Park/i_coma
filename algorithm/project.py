@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import random
 import math
 import time
 
@@ -19,7 +20,8 @@ def det_calc(df):
     else: 
         volume = np.linalg.det(volume)
         
-    volume = abs(volume) ** 0.5
+    if volume > 0:
+        volume = volume ** 0.5
     return volume
 
 def sortByDetSize(matrix):
@@ -37,52 +39,31 @@ def sortByDetSize(matrix):
         
         sortedList.append([det.item(), idx])
         idx += 1
-        
-    sortedList.sort(reverse=True)
-    return sortedList
-
-def sortBySumSize(matrix):
-    matrix = np.array(matrix)
-    sortedList = []
-    idx = 0
-    for row in matrix:
-        sortedList.append([np.sum(row), idx])
-        idx += 1
     sortedList.sort(reverse = True)
+    #print(sortedList[:5])
     return sortedList
-
+    
 if __name__ == "__main__":
-    df = get_matrix('input.csv') # Matrix Read to list , 10000 * 20
-    
     startTime = time.time()
-    #sorted_list = sortByDetSize(df)
-    sorted_list = sortBySumSize(df)
-    
-    global_max = 0
-    global_time = 0
-    for startPoint in range(50):
-        used = [False] * 10000
-        det_matrix = []
-        det_matrix.append(df[sorted_list[startPoint][1]])
-        used[startPoint] = True
-        
-        max = 0
-        max_idx = 0
-        before_max = 0
-        for i in range(20):
-            for j in range(10000):
-                if used[j] is False:
-                    test_mat = det_matrix + [df[sorted_list[j][1]]]
-                    v = det_calc(test_mat)
-                    if v > max:
-                        max_idx = j
-                        max = v
-            det_matrix.append(df[sorted_list[max_idx][1]])
-            used[max_idx] = True
-        if max > global_max:
-            global_max = max
-        
-        usingTime_sec = time.time() - startTime
-        print(f"{startPoint} 소요시간 : {usingTime_sec}sec,{max}")
-        global_time += usingTime_sec
-    print(f"최종 결과 : {global_max}, 소요시간: {global_time}")
+    df = get_matrix('input.csv') # Matrix Read to list , 10000 * 20
+    max_idx = 0
+    max = 0
+    used = [False] * 10000
+    det_matrix = []
+    for iter in range(20): # 20까지 반복
+        for j in range(10000): # 모든 칼럼에 대해 det연산이 최대가 되는 칼럼찾기
+            if used[j] is False:
+                test_mat = det_matrix + [df[j]]
+                v = det_calc(test_mat)
+                if v > max:
+                    max_idx = j
+                    max = v        
+        det_matrix.append(df[max_idx])
+        used[max_idx] = True
+        #print(max, startPoint, len(det_matrix))
+
+    print(max)
+
+    usingTime_sec = time.time() - startTime
+    print(f"소요시간 : {usingTime_sec}sec")
+    #print(global_max)
